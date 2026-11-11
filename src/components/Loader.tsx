@@ -1,33 +1,56 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 /**
- * Brief branded intro. Waits until the WebGL orb has rendered a few frames
- * (or a safety timeout), then lifts away and flags the page as ready —
- * which starts the hero reveal + orb assembly in sync.
+ * Branded intro. Stays up for at least MIN_MS so fonts, the 3D scene and
+ * textures are fully ready, shows a real progress counter, then lifts away
+ * and flags the page as ready (starts the hero reveal in sync).
  */
+const MIN_MS = 5500
+const SAFETY_MS = 12000 // never block the page longer than this
+
 export default function Loader() {
   const [phase, setPhase] = useState<'loading' | 'leaving' | 'done'>('loading')
+  const [pct, setPct] = useState(0)
+  const ready = useRef({ scene: false, fonts: false })
 
   useEffect(() => {
     const start = performance.now()
-    let fired = false
-    const go = () => {
-      if (fired) return
-      fired = true
-      const wait = Math.max(0, 900 - (performance.now() - start)) // let the mark animate at least once
-      setTimeout(() => {
-        setPhase('leaving')
-        document.body.classList.add('is-ready')
-        window.dispatchEvent(new Event('app-ready'))
-        setTimeout(() => setPhase('done'), 1100)
-      }, wait)
+    let raf = 0
+    let finished = false
+
+    const markScene = () => (ready.current.scene = true)
+    if ((window as unknown as { __sceneReady?: boolean }).__sceneReady) markScene()
+    window.addEventListener('scene-ready', markScene)
+    document.fonts.ready.then(() => (ready.current.fonts = true))
+
+    const tick = (now: number) => {
+      const t = now - start
+      const allReady = ready.current.scene && ready.current.fonts
+      // time-based progress with an ease-out; holds at 99 until everything is ready
+      const k = Math.min(1, t / MIN_MS)
+      const eased = 1 - Math.pow(1 - k, 2.2)
+      let p = Math.floor(eased * 100)
+      if (!allReady && t < SAFETY_MS) p = Math.min(p, 99)
+      setPct(p)
+
+      if (!finished && ((k >= 1 && allReady) || t >= SAFETY_MS)) {
+        finished = true
+        setPct(100)
+        setTimeout(() => {
+          setPhase('leaving')
+          document.body.classList.add('is-ready')
+          window.dispatchEvent(new Event('app-ready'))
+          setTimeout(() => setPhase('done'), 1100)
+        }, 250)
+        return
+      }
+      raf = requestAnimationFrame(tick)
     }
-    if ((window as unknown as { __sceneReady?: boolean }).__sceneReady) go()
-    window.addEventListener('scene-ready', go)
-    const safety = setTimeout(go, 4000)
+    raf = requestAnimationFrame(tick)
+
     return () => {
-      window.removeEventListener('scene-ready', go)
-      clearTimeout(safety)
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scene-ready', markScene)
     }
   }, [])
 
@@ -40,7 +63,10 @@ export default function Loader() {
         </svg>
         <span>Joyride</span>
       </div>
-      <div className="loader-bar"><span /></div>
+      <div className="loader-bar">
+        <span style={{ transform: `scaleX(${pct / 100})` }} />
+      </div>
+      <div className="loader-pct">{String(pct).padStart(2, '0')}%</div>
     </div>
   )
 }
