@@ -105,7 +105,7 @@
 .foot-word {
   font-size: clamp(90px, 21vw, 380px); font-weight: 800; font-style: italic; letter-spacing: -0.06em; line-height: 0.78;
   text-align: center; margin-bottom: -0.08em; user-select: none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0));
+  background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.1) 55%, rgba(255,255,255,0.02) 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
