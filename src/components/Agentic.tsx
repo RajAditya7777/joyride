@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { scrollToY } from '../lib/scroll'
+import { scrollToY, setVar, trackSection } from '../lib/scroll'
 import { ApiDemo, CliDemo, CopilotDemo, McpDemo } from './AgenticDemos'
 import './agentic.css'
 
@@ -128,27 +128,13 @@ export default function Agentic() {
 
   useEffect(() => {
     const el = section.current!
-    let raf = 0
-    const on = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect()
-        const vh = window.innerHeight
-        const total = el.offsetHeight - vh
-        const p = Math.min(1, Math.max(0, -r.top / total))
-        el.style.setProperty('--p', p.toFixed(4))
-        el.style.setProperty('--enter', Math.min(1, Math.max(0, 1 - r.top / vh)).toFixed(4))
-        setActive(Math.min(TABS.length - 1, Math.floor(p * TABS.length)))
-        if (r.top < vh * 0.45 && r.bottom > vh * 0.55) setLive(true)
-      })
-    }
-    on()
-    window.addEventListener('scroll', on, { passive: true })
-    window.addEventListener('resize', on)
-    return () => {
-      window.removeEventListener('scroll', on)
-      window.removeEventListener('resize', on)
-    }
+    const vars: Record<string, string> = {}
+    return trackSection(el, ({ top, vh, p, enter }) => {
+      setVar(el, '--p', p, vars)
+      setVar(el, '--enter', enter, vars)
+      setActive(Math.min(TABS.length - 1, Math.floor(p * TABS.length)))
+      if (top < vh * 0.45) setLive(true)
+    })
   }, [])
 
   const select = useCallback((i: number) => {

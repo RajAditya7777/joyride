@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { onScroll } from '../lib/scroll'
 
 const Chevron = () => (
   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -50,11 +51,7 @@ export function Logo() {
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const on = () => setScrolled(scrollY > 8)
-    addEventListener('scroll', on, { passive: true })
-    return () => removeEventListener('scroll', on)
-  }, [])
+  useEffect(() => onScroll((y) => setScrolled(y > 8)), [])
 
   return (
     <header className={`nav-wrap reveal ${scrolled ? 'is-scrolled' : ''}`} style={{ ['--d' as string]: '100ms' }}>

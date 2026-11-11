@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import RetailChart from './RetailChart'
+import { setVar, trackSection } from '../lib/scroll'
 import './retail.css'
 
 /* ------------------------------------------------------------------ *
@@ -411,29 +412,14 @@ export default function Retail() {
 
   useEffect(() => {
     const el = section.current!
-    let raf = 0
-    const on = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect()
-        const vh = window.innerHeight
-        const total = el.offsetHeight - vh
-        const p = clamp(-r.top / total)
-        const intro = ease(clamp(p / 0.16))
-        el.style.setProperty('--p', p.toFixed(4))
-        el.style.setProperty('--intro', intro.toFixed(4))
-        el.style.setProperty('--enter', clamp(1 - r.top / vh).toFixed(4))
-        setFocus(p < 0.17 ? 'none' : p < 0.42 ? 'chart' : p < 0.67 ? 'chain' : p < 0.92 ? 'ticket' : 'none')
-        if (r.top < vh * 0.6 && r.bottom > vh * 0.4) setLive(true)
-      })
-    }
-    on()
-    window.addEventListener('scroll', on, { passive: true })
-    window.addEventListener('resize', on)
-    return () => {
-      window.removeEventListener('scroll', on)
-      window.removeEventListener('resize', on)
-    }
+    const vars: Record<string, string> = {}
+    return trackSection(el, ({ top, vh, p, enter }) => {
+      setVar(el, '--p', p, vars)
+      setVar(el, '--intro', ease(clamp(p / 0.16)), vars)
+      setVar(el, '--enter', enter, vars)
+      setFocus(p < 0.17 ? 'none' : p < 0.42 ? 'chart' : p < 0.67 ? 'chain' : p < 0.92 ? 'ticket' : 'none')
+      if (top < vh * 0.6) setLive(true)
+    })
   }, [])
 
   return (

@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { Environment, Lightformer } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import Tower from './Tower'
+import { onScroll } from '../lib/scroll'
 
 export default function Scene() {
   const ready = useCallback(() => {
@@ -12,26 +13,22 @@ export default function Scene() {
   }, [])
 
   // Fade the tower out as the hero scrolls away, and stop rendering once it's invisible.
+  // Driven by the shared scroll bus (no DOM reads); hidden canvas is also taken off the compositor.
   const inner = useRef<HTMLDivElement>(null)
   const [live, setLive] = useState(true)
   useEffect(() => {
-    let raf = 0
-    const on = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const h = window.innerHeight
-        const o = 1 - Math.min(1, Math.max(0, (window.scrollY - h * 0.3) / (h * 0.55)))
-        if (inner.current) inner.current.style.opacity = String(o)
-        setLive(o > 0.001)
-      })
-    }
-    on()
-    window.addEventListener('scroll', on, { passive: true })
-    window.addEventListener('resize', on)
-    return () => {
-      window.removeEventListener('scroll', on)
-      window.removeEventListener('resize', on)
-    }
+    let last = -1
+    return onScroll((y, vh) => {
+      const o = Math.round((1 - Math.min(1, Math.max(0, (y - vh * 0.3) / (vh * 0.55)))) * 1000) / 1000
+      if (o === last) return
+      last = o
+      const el = inner.current
+      if (el) {
+        el.style.opacity = String(o)
+        el.style.visibility = o === 0 ? 'hidden' : 'visible'
+      }
+      setLive(o > 0)
+    })
   }, [])
 
   return (
@@ -39,10 +36,10 @@ export default function Scene() {
       <div ref={inner} className="webgl-inner">
       <Canvas
         frameloop={live ? 'always' : 'never'}
-        shadows="soft"
-        dpr={[1, 1.75]}
+        shadows
+        dpr={[1, 1.5]}
         camera={{ position: [0, 2.6, 12.5], fov: 30, near: 0.1, far: 60 }}
-        gl={{ antialias: true, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
+        gl={{ antialias: false, stencil: false, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
         eventSource={document.getElementById('root')!}
         eventPrefix="client"
       >
@@ -52,7 +49,7 @@ export default function Scene() {
         <Suspense fallback={null}>
           {/* Dark studio: a warm amber softbox on the left, cool white strips above/right.
               Gives the steel a moody sheen and the chrome ball its orange glints. */}
-          <Environment resolution={512} frames={1}>
+          <Environment resolution={256} frames={1}>
             {/* big, soft softboxes => smooth gradient reflections on the chrome ball (no hard dots) */}
             <Lightformer form="circle" intensity={1.1} color="#ff7a1f" position={[-5, -0.5, 3]} scale={5} target={[0, 0, 0]} />
             <Lightformer form="rect" intensity={2} color="#ffffff" position={[0, 6, 1]} scale={[12, 5, 1]} target={[0, 0, 0]} />

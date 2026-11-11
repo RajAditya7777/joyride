@@ -76,7 +76,7 @@ function TowerScene({ tx, onReady }: { tx: TowerTextures; onReady?: () => void }
 
   // Live reflection so the chrome ball mirrors the containers + amber glow around it.
   const cube = useMemo(() => {
-    const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType })
+    const rt = new THREE.WebGLCubeRenderTarget(128, { type: THREE.HalfFloatType })
     return { rt, cam: new THREE.CubeCamera(0.05, 30, rt) }
   }, [])
   const chrome = useMemo(
@@ -166,7 +166,7 @@ function TowerScene({ tx, onReady }: { tx: TowerTextures; onReady?: () => void }
     fill.current.target.updateMatrixWorld()
 
     // reflection probe (every other frame)
-    if (frames.current % 2 === 0) {
+    if (frames.current % 3 === 0) { // reflection probe: 6 renders, so only every 3rd frame
       mb.visible = false
       mb.getWorldPosition(cube.cam.position)
       const au = gl.shadowMap.autoUpdate
@@ -191,7 +191,7 @@ function TowerScene({ tx, onReady }: { tx: TowerTextures; onReady?: () => void }
         angle={0.52}
         penumbra={0.55}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.03}
         shadow-camera-near={2}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './perps.css'
+import { setVar, trackSection } from '../lib/scroll'
 
 /* ------------------------------------------------------------------ *
  * Why Trade Options vs. Perps? — a scroll-driven race on one chart.
@@ -135,7 +136,7 @@ const Icon = {
 
 export default function Perps() {
   const section = useRef<HTMLElement>(null)
-  const [t, setT] = useState(0)
+  const [idx, setIdx] = useState(0)
   const [strat, setStrat] = useState<Strat>('Long call')
   const sim = useMemo(simulate, [])
   const svgBox = useRef<HTMLDivElement>(null)
@@ -153,27 +154,14 @@ export default function Perps() {
 
   useEffect(() => {
     const el = section.current!
-    let raf = 0
-    const on = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect()
-        const vh = window.innerHeight
-        const p = clamp(-r.top / (el.offsetHeight - vh))
-        el.style.setProperty('--enter', clamp(1 - r.top / vh).toFixed(4))
-        setT(Math.round(clamp((p - 0.04) / 0.82) * 1000) / 1000)
-      })
-    }
-    on()
-    window.addEventListener('scroll', on, { passive: true })
-    window.addEventListener('resize', on)
-    return () => {
-      window.removeEventListener('scroll', on)
-      window.removeEventListener('resize', on)
-    }
+    const vars: Record<string, string> = {}
+    return trackSection(el, ({ p, enter }) => {
+      setVar(el, '--enter', enter, vars)
+      setIdx(Math.min(N - 1, Math.round(clamp((p - 0.04) / 0.82) * (N - 1))))
+    })
   }, [])
 
-  const idx = Math.min(N - 1, Math.round(t * (N - 1)))
+  const t = idx / (N - 1)
   const liquidated = idx >= sim.liqIdx
   const price = sim.price[idx]
   const perpPnl = sim.perp[idx]

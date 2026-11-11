@@ -79,7 +79,19 @@ export default function RetailChart({ live, onPrice }: { live: boolean; onPrice:
     let ticks = 0
     const t0 = performance.now()
 
+    // only animate while the chart is on screen
+    let visible = true
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+      if (visible && !raf) raf = requestAnimationFrame(draw)
+    })
+    io.observe(cv)
+
     const draw = () => {
+      if (!visible) {
+        raf = 0
+        return
+      }
       const now = performance.now()
       if (live) reveal.current = Math.min(N, ((now - t0) / 2400) * N)
       const shown = Math.floor(reveal.current)
@@ -194,6 +206,7 @@ export default function RetailChart({ live, onPrice }: { live: boolean; onPrice:
     return () => {
       cancelAnimationFrame(raf)
       clearInterval(tickTimer)
+      io.disconnect()
     }
   }, [live])
 

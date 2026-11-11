@@ -74,14 +74,20 @@ function Candles() {
 export default function Cta() {
   const card = useRef<HTMLDivElement>(null)
   const [inView, setInView] = useState(false)
+  const [visible, setVisible] = useState(false)
   const [email, setEmail] = useState('')
   const [state, setState] = useState<'idle' | 'error' | 'sending' | 'done'>('idle')
 
   useEffect(() => {
     const el = card.current!
     const io = new IntersectionObserver(([e]) => e.isIntersecting && setInView(true), { threshold: 0.45 })
+    const vis = new IntersectionObserver(([e]) => setVisible(e.isIntersecting))
     io.observe(el)
-    return () => io.disconnect()
+    vis.observe(el)
+    return () => {
+      io.disconnect()
+      vis.disconnect()
+    }
   }, [])
 
   const submit = (e: FormEvent) => {
@@ -98,7 +104,7 @@ export default function Cta() {
   return (
     <>
       <section className="cta-sec" id="waitlist">
-        <div ref={card} className={`cta-card ${inView ? 'in' : ''}`}>
+        <div ref={card} className={`cta-card ${inView ? 'in' : ''} ${visible ? 'vis' : ''}`}>
           <Candles />
           <div className="cta-glow" aria-hidden />
           <div className="cta-copy">

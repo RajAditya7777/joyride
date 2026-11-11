@@ -248,3 +248,7 @@
 @media (prefers-reduced-motion: reduce) {
   .ln, .type { opacity: 1; translate: none; clip-path: none; }
 }
+
+/* perf: scroll-driven entrance runs on the compositor */
+.ag-left, .ag-right { will-change: translate, opacity; }
+.ball { will-change: transform; }

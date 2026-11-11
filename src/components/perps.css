@@ -144,3 +144,6 @@
   .pp-chart-h { font-size: 10px; }
   .pc-strats { display: none; }
 }
+
+/* perf: scroll-driven entrance runs on the compositor */
+.pp-head, .pp-grid, .pp-cards { will-change: translate, opacity; }
