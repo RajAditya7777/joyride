@@ -1,3 +1,4 @@
+import TradeButton from './TradeButton'
 import { useEffect, useRef, useState } from 'react'
 
 const ASSETS = ['BTC', 'ETH', 'SOL']
@@ -28,7 +29,7 @@ function RotatingAsset() {
 }
 
 export default function Hero() {
-  const cta = useRef<HTMLAnchorElement>(null)
+  const cta = useRef<HTMLAnchorElement & HTMLButtonElement>(null)
 
   // subtle magnetic pull on the CTA
   useEffect(() => {
@@ -61,9 +62,9 @@ export default function Hero() {
             Stop chasing 100x on memes and hype. Crypto options with 100x leverage and zero liquidation risk.
           </p>
           <div className="reveal" style={{ ['--d' as string]: '820ms' }}>
-            <a ref={cta} className="cta" href="#waitlist">
-              <span>Join Waitlist</span>
-            </a>
+            <TradeButton ref={cta} className="cta" href="#waitlist">
+              Join Waitlist
+            </TradeButton>
           </div>
         </div>
       </div>

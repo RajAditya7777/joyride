@@ -1,3 +1,4 @@
+import TradeButton from './TradeButton'
 import { useEffect, useState } from 'react'
 import { onScroll } from '../lib/scroll'
 
@@ -64,8 +65,12 @@ export default function Nav() {
           <a className="nav-link" href="#team">Team</a>
         </div>
         <div className="nav-cta">
-          <a className="nbtn nbtn-grey" href="#app">Launch App</a>
-          <a className="nbtn nbtn-white" href="#waitlist">Join Waitlist</a>
+          <TradeButton className="nbtn nbtn-grey" variant="dark" href="#app">
+            Launch App
+          </TradeButton>
+          <TradeButton className="nbtn nbtn-white" href="#waitlist">
+            Join Waitlist
+          </TradeButton>
         </div>
         <button className={`burger ${open ? 'is-open' : ''}`} aria-label="Menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
           <span />

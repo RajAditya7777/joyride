@@ -1,3 +1,4 @@
+import TradeButton from './TradeButton'
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Logo } from './Nav'
 import './cta.css'
@@ -131,9 +132,9 @@ export default function Cta() {
                 />
                 <div className="cta-btn-wrap">
                   <div className="cta-ball" aria-hidden />
-                  <button className="cta-btn" type="submit" disabled={state === 'sending'}>
+                  <TradeButton className="cta-btn" type="submit" disabled={state === 'sending'} arrow={state !== 'sending'}>
                     {state === 'sending' ? <i className="tt-spin" /> : 'Get Early Access'}
-                  </button>
+                  </TradeButton>
                 </div>
               </form>
             ) : (
