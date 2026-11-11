@@ -302,13 +302,13 @@ function corrugatedNormal(w: number, h: number, rail: number) {
 
 function stencil(ctx: CanvasRenderingContext2D, text: string, w: number, h: number) {
   let size = Math.round(h * 0.56)
-  ctx.font = `900 ${size}px Inter, system-ui, sans-serif`
-  ctx.letterSpacing = '-3px'
+  ctx.font = `700 ${size}px "Clash Display", system-ui, sans-serif`
+  ctx.letterSpacing = '2px'
   const maxW = w * 0.6
   const tw = ctx.measureText(text).width
   if (tw > maxW) {
     size = Math.floor((size * maxW) / tw)
-    ctx.font = `900 ${size}px Inter, system-ui, sans-serif`
+    ctx.font = `700 ${size}px "Clash Display", system-ui, sans-serif`
   }
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'

@@ -87,7 +87,7 @@ export default function RetailChart({ live, onPrice }: { live: boolean; onPrice:
       ctx.clearRect(0, 0, W, H)
 
       // grid + price axis
-      ctx.font = '9.5px "JetBrains Mono", monospace'
+      ctx.font = '9.5px "Geist Mono", monospace'
       ctx.textBaseline = 'middle'
       for (let v = 100; v <= 112; v++) {
         const y = yOf(v)
@@ -137,7 +137,7 @@ export default function RetailChart({ live, onPrice }: { live: boolean; onPrice:
         ctx.fillStyle = '#2fe39a'
         ctx.fillRect(W - PAD_R + 2, y - 7, PAD_R - 4, 14)
         ctx.fillStyle = '#04130b'
-        ctx.font = '600 9.5px "JetBrains Mono", monospace'
+        ctx.font = '600 9.5px "Geist Mono", monospace'
         ctx.textBaseline = 'middle'
         ctx.fillText(last.c.toFixed(2), W - PAD_R + 6, y)
         ctx.textBaseline = 'alphabetic'

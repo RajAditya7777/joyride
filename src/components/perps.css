@@ -40,15 +40,15 @@
 .pp-svg-box { position: relative; flex: 1; min-height: 0; }
 .pp-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .pp-grid-l { stroke: rgba(255,255,255,0.05); }
-.pp-axis { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #55555c; }
+.pp-axis { font-family: var(--mono); font-size: 11px; fill: #55555c; }
 .pp-price-l { fill: none; stroke: #f1f1f4; stroke-width: 2.2; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(255,255,255,0.25)); }
 .pp-liq-l { stroke: #ff4d5e; stroke-width: 1.2; stroke-dasharray: 6 5; opacity: 0.8; }
-.pp-liq-t { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #ff6b78; }
+.pp-liq-t { font-family: var(--mono); font-size: 11px; fill: #ff6b78; }
 .pp-entry { fill: #000; stroke: #fff; stroke-width: 1.5; }
 .pp-ball-glow { fill: rgba(255,122,31,0.22); filter: blur(4px); }
 
 .pp-stamp rect { fill: rgba(255,77,94,0.14); stroke: #ff4d5e; stroke-width: 2; }
-.pp-stamp text { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 17px; letter-spacing: 0.12em; fill: #ff4d5e; }
+.pp-stamp text { font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 0.12em; fill: #ff4d5e; }
 .pp-stamp > g { transform-box: fill-box; animation: stampIn 0.5s cubic-bezier(.2,1.6,.4,1) both; }
 @keyframes stampIn { from { opacity: 0; scale: 2.2; } to { opacity: 1; scale: 1; } }
 .pp-burst { fill: none; stroke: #ff4d5e; stroke-width: 3; transform-box: fill-box; transform-origin: center; animation: burst 0.9s ease-out both; }
@@ -64,7 +64,7 @@
   transition: box-shadow 0.5s, opacity 0.5s;
 }
 .pnl-h { display: flex; justify-content: space-between; align-items: center; }
-.pnl-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #c9c9cf; }
+.pnl-tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: #c9c9cf; }
 .pnl-state { font-size: 10.5px; color: #6e6e75; }
 .pnl-v { font-size: clamp(26px, 2.6vw, 42px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .pnl-v.up { color: #2fe39a; }

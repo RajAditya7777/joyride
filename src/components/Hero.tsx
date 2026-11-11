@@ -11,10 +11,16 @@ function RotatingAsset() {
   }, [])
   return (
     <span className="rot" aria-live="polite">
-      <span className="rot-sizer" aria-hidden>ETH</span>
+      {/* reserves the width of the widest word so the line never jumps or overlaps */}
+      <span className="rot-sizer" aria-hidden>
+        {ASSETS.map((a) => (
+          <span key={a}>{a}</span>
+        ))}
+      </span>
       {ASSETS.map((a, k) => (
         <span key={a} className={`rot-word rot-${a.toLowerCase()} ${k === i ? 'is-on' : ''} ${k === (i + ASSETS.length - 1) % ASSETS.length ? 'is-off' : ''}`}>
-          {a}
+          <span className="rw-glow" aria-hidden>{a}</span>
+          <span className="rw-text">{a}</span>
         </span>
       ))}
     </span>

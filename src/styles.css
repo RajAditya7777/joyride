@@ -4,7 +4,9 @@
   --muted: #8f8f94;
   --orange: #ff7a1f;
   --line: rgba(255, 255, 255, 0.08);
-  --font: 'Inter', system-ui, -apple-system, sans-serif;
+  --font: 'Satoshi', system-ui, -apple-system, sans-serif;
+  --font-display: 'Clash Display', 'Satoshi', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -15,7 +17,6 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 body {
   font-family: var(--font);
-  font-feature-settings: 'cv11', 'ss01', 'ss03';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -164,18 +165,25 @@ body:not(.is-ready) .line-in { animation-play-state: paused; }
 .hero-sub { margin: 30px 0 40px; max-width: 26em; font-size: clamp(16px, 1.45vw, 24px); line-height: 1.55; color: var(--muted); letter-spacing: -0.005em; }
 
 /* rotating asset word */
-.rot { position: relative; display: inline-block; vertical-align: bottom; overflow: hidden; height: 1.07em; }
-.rot-sizer { visibility: hidden; }
+.rot { position: relative; display: inline-block; vertical-align: bottom; height: 1.07em;
+  /* clip the slide, but leave room around the box so the glow fades out softly instead of being cut */
+  clip-path: inset(-0.35em -0.7em -0.35em -0.7em); }
+.rot-sizer { visibility: hidden; display: inline-grid; padding-right: 0.06em; }
+.rot-sizer > span { grid-area: 1 / 1; }
 .rot-word {
   position: absolute; left: 0; top: 0;
   transform: translateY(105%); opacity: 0;
   transition: transform 0.9s var(--ease), opacity 0.6s var(--ease);
 }
-.rot-word { -webkit-background-clip: text; background-clip: text; color: transparent; }
-.rot-word.is-on, .rot-word.is-off { padding-right: 0.04em; }
-.rot-btc { background-image: linear-gradient(100deg, #ffb347 0%, #ff8a1f 55%, #ff6a00 100%); filter: drop-shadow(0 0 22px rgba(255,138,31,0.35)); }
-.rot-eth { background-image: linear-gradient(100deg, #b7c4ff 0%, #7b8cff 55%, #5a6bff 100%); filter: drop-shadow(0 0 22px rgba(123,140,255,0.38)); }
-.rot-sol { background-image: linear-gradient(100deg, #b66bff 0%, #8e6bff 40%, #19f5a0 100%); filter: drop-shadow(0 0 22px rgba(25,245,160,0.3)); }
+.rot-word .rw-text { position: relative; -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.04em; text-shadow: none; }
+/* glow = a blurred copy *behind* the gradient text (a filter on clipped text paints a dark box) */
+.rot-word .rw-glow { position: absolute; left: 0; top: 0; filter: blur(18px); opacity: 0.5; pointer-events: none; text-shadow: none; }
+.rot-btc .rw-text { background-image: linear-gradient(100deg, #ffc06b 0%, #ff8a1f 50%, #ff6a00 100%); }
+.rot-btc .rw-glow { color: #ff8a1f; }
+.rot-eth .rw-text { background-image: linear-gradient(100deg, #c9d3ff 0%, #8494ff 50%, #5d6dff 100%); }
+.rot-eth .rw-glow { color: #6f7fff; }
+.rot-sol .rw-text { background-image: linear-gradient(100deg, #c084ff 0%, #9b6bff 40%, #19f5a0 100%); }
+.rot-sol .rw-glow { color: #5fd6b8; }
 .rot-word.is-on { transform: none; opacity: 1; }
 .rot-word.is-off { transform: translateY(-105%); opacity: 0; }
 
@@ -226,3 +234,40 @@ body:not(.is-ready) .line-in { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition: none !important; }
 }
+
+/* ==================================================================
+ * Typography system
+ * Display: Clash Display — every headline, labels on steel, stamps
+ * Body:    Satoshi       — paragraphs, nav, buttons, UI copy
+ * Mono:    Geist Mono    — prices, P&L, code, terminal UI
+ * (styles.css loads after component CSS, so these win at equal specificity)
+ * ================================================================== */
+.hero-title, .ag-title, .rt-title, .pp-title, .cta-title, .rt-mcap b, .cap b {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  font-kerning: normal;
+}
+.hero-title { line-height: 1.02; font-size: clamp(42px, 5.3vw, 98px); }
+.ag-title { letter-spacing: -0.02em; }
+.cta-title { line-height: 0.98; letter-spacing: -0.022em; }
+.cap b, .rt-mcap b { font-weight: 600; letter-spacing: -0.01em; }
+
+.logo, .loader-mark, .t-logo, .ph-logo, .foot-word { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; }
+.foot-word { font-weight: 700; letter-spacing: -0.035em; }
+
+.box-label { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.01em; }
+.pc-h b, .feature strong, .ticket-title, .tt-name, .cta-done b { font-family: var(--font-display); font-weight: 500; letter-spacing: 0; }
+.pp-stamp text { font-family: var(--font-display) !important; font-weight: 700 !important; letter-spacing: 0.14em; }
+
+/* body copy: Satoshi reads best slightly looser */
+.hero-sub, .ag-sub, .rt-sub, .pp-sub, .cta-sub, .pc p, .cap p, .rt-mcap p { letter-spacing: 0.002em; }
+.hero-sub { font-weight: 400; }
+.nav-link, .nbtn, .cta, .cta-btn, .btn, .tt-go, .getprice { font-weight: 500; letter-spacing: 0.005em; }
+.nbtn-white, .cta, .cta-btn { font-weight: 700; }
+
+/* numbers: tabular, crisp */
+.mono, .pnl-v, .pp-price, .sol-price, .t-px, .ph-px { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.ag-eyebrow { font-family: var(--mono); }
+
+@media (max-width: 480px) { .hero-title { font-size: 40px; } }

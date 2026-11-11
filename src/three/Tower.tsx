@@ -33,7 +33,7 @@ export default function Tower({ onReady }: { onReady?: () => void }) {
   useEffect(() => {
     let alive = true
     const go = () => alive && setTx(makeTextures())
-    Promise.race([Promise.all([document.fonts.load('900 200px Inter'), document.fonts.ready]), new Promise((r) => setTimeout(r, 2500))]).then(go, go)
+    Promise.race([Promise.all([document.fonts.load('700 200px "Clash Display"'), document.fonts.ready]), new Promise((r) => setTimeout(r, 2500))]).then(go, go)
     return () => {
       alive = false
     }
