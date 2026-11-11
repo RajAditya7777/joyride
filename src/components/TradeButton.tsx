@@ -19,22 +19,20 @@ const Arrow = () => (
   </svg>
 )
 
-/** Deterministic upward random walk, so every button shows a believable chart. */
-function sparkPath(seed: number) {
-  let s = seed
-  const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646
-  let v = 30
-  const pts: [number, number][] = []
-  for (let i = 0; i <= 24; i++) {
-    v += (r() - 0.32) * 5.2
-    v = Math.max(6, Math.min(34, v))
-    pts.push([(i / 24) * 100, 40 - v])
+/**
+ * A seamless, periodic price wiggle drawn over 0–200 (period 100), so it can
+ * scroll left forever like a live feed with no visible seam.
+ */
+function streamPath(seed: number) {
+  const ph = [seed % 7, (seed * 3) % 11, (seed * 5) % 13].map((v) => v * 0.9)
+  const y = (x: number) => {
+    const t = (x / 100) * Math.PI * 2
+    return 22 - 6.5 * Math.sin(t * 2 + ph[0]) - 4 * Math.sin(t * 5 + ph[1]) - 2.2 * Math.sin(t * 11 + ph[2])
   }
-  // finish on a clear breakout
-  pts[pts.length - 1][1] = 6
-  pts[pts.length - 2][1] = Math.min(pts[pts.length - 2][1], 11)
-  const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`).join('')
-  return { line, area: `${line}L100,40L0,40Z` }
+  const pts: string[] = []
+  for (let x = 0; x <= 200; x += 2) pts.push(`${x ? 'L' : 'M'}${x},${y(x).toFixed(2)}`)
+  const line = pts.join('')
+  return { line, area: `${line}L200,40L0,40Z` }
 }
 
 let uid = 0
@@ -53,7 +51,7 @@ type Props = {
 
 export default function TradeButton({ children, className = '', variant = 'light', href, type = 'button', disabled, arrow = true, onClick, ref }: Props) {
   const seed = useRef(++uid * 977 + 13).current
-  const { line, area } = useMemo(() => sparkPath(seed), [seed])
+  const { line, area } = useMemo(() => streamPath(seed), [seed])
   const [ticks, setTicks] = useState<Tick[]>([])
   const [ring, setRing] = useState<{ k: number; x: number; y: number } | null>(null)
 
@@ -88,11 +86,12 @@ export default function TradeButton({ children, className = '', variant = 'light
   const inner = (
     <>
       <span className="tb-clip" aria-hidden>
-        <svg className="tb-chart" viewBox="0 0 100 40" preserveAspectRatio="none">
-          <path d={area} className="tb-area" />
-          <path d={line} className="tb-line" pathLength={1} />
-        </svg>
-        <span className="tb-dot" />
+        <span className="tb-chart-wrap">
+          <svg className="tb-chart" viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path d={area} className="tb-area" />
+            <path d={line} className="tb-line" />
+          </svg>
+        </span>
         <span className="tb-glint" />
       </span>
       <span className="tb-label">
